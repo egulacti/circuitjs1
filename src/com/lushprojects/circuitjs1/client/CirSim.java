@@ -98,6 +98,7 @@ MouseOutHandler, MouseWheelHandler {
     Random random;
     Button resetButton;
     Button runStopButton;
+    Button aboutButton;
     Button dumpMatrixButton;
     MenuItem aboutItem;
     MenuItem importFromLocalFileItem, importFromTextItem,
@@ -143,6 +144,11 @@ MouseOutHandler, MouseWheelHandler {
     boolean mouseWasOverSplitter = false; 
 
 //    Class addingClass;
+    static final int MODE_NORMAL = 0;
+    static final int MODE_STUDENT = 1;
+        
+    int globalSimMode=MODE_STUDENT;
+    
     PopupPanel contextPanel = null;
     int mouseMode = MODE_SELECT;
     int tempMouseMode = MODE_SELECT;
@@ -397,7 +403,10 @@ MouseOutHandler, MouseWheelHandler {
 	      VERTICALPANELWIDTH = 128;
 
 	  menuBar = new MenuBar();
-	  menuBar.addItem(LS("File"), fileMenuBar);
+	  
+	  if (globalSimMode==MODE_NORMAL) {
+	      menuBar.addItem(LS("File"), fileMenuBar);
+	  }
 	  verticalPanel=new VerticalPanel();
 	  
 	  // make buttons side by side if there's room
@@ -426,16 +435,22 @@ MouseOutHandler, MouseWheelHandler {
 	MenuBar drawMenuBar = new MenuBar(true);
 	drawMenuBar.setAutoOpen(true);
 
-	menuBar.addItem(LS("Draw"), drawMenuBar);
+	if (globalSimMode==MODE_NORMAL) {
+	    menuBar.addItem(LS("Draw"), drawMenuBar);
+	}
 	
 	m = new MenuBar(true);
 	m.addItem(new MenuItem(LS("Stack All"), new MyCommand("scopes", "stackAll")));
 	m.addItem(new MenuItem(LS("Unstack All"),new MyCommand("scopes", "unstackAll")));
 	m.addItem(new MenuItem(LS("Combine All"),new MyCommand("scopes", "combineAll")));
-	menuBar.addItem(LS("Scopes"), m);
+	if (globalSimMode==MODE_NORMAL) {
+	    menuBar.addItem(LS("Scopes"), m);
+	}
 		
 	optionsMenuBar = m = new MenuBar(true );
-	menuBar.addItem(LS("Options"), optionsMenuBar);
+	if (globalSimMode==MODE_NORMAL) {
+	    menuBar.addItem(LS("Options"), optionsMenuBar);
+	}
 	m.addItem(dotsCheckItem = new CheckboxMenuItem(LS("Show Current")));
 	dotsCheckItem.setState(true);
 	m.addItem(voltsCheckItem = new CheckboxMenuItem(LS("Show Voltage"),
@@ -512,12 +527,15 @@ MouseOutHandler, MouseWheelHandler {
 
 	mainMenuBar = new MenuBar(true);
 	mainMenuBar.setAutoOpen(true);
-	composeMainMenu(mainMenuBar);
-	composeMainMenu(drawMenuBar);
+	if (globalSimMode==MODE_NORMAL) {
+	    composeMainMenu(mainMenuBar);
+	    composeMainMenu(drawMenuBar);
+	}
 	loadShortcuts();
 
-	  
+	if (globalSimMode==MODE_NORMAL) {  
 	  layoutPanel.addNorth(menuBar, MENUBARHEIGHT);
+	}
 	  layoutPanel.addEast(verticalPanel, VERTICALPANELWIDTH);
 	  RootLayoutPanel.get().add(layoutPanel);
 	
@@ -541,13 +559,22 @@ MouseOutHandler, MouseWheelHandler {
 			      resetAction();
 			    }
 			  });
+		 		 
 		 resetButton.setStylePrimaryName("topButton");
-		 buttonPanel.add(runStopButton = new Button(LSHTML("<Strong>RUN</Strong>&nbsp;/&nbsp;Stop")));
+		 		 buttonPanel.add(runStopButton = new Button(LSHTML("<Strong>RUN</Strong>&nbsp;/&nbsp;Stop")));
 		 runStopButton.addClickHandler(new ClickHandler() {
 			    public void onClick(ClickEvent event) {
 			      setSimRunning(!simIsRunning());
 			    }
 			  });
+		 
+		 buttonPanel.add(aboutButton = new Button(LS("?")));
+		 aboutButton.addClickHandler(new ClickHandler() {
+			    public void onClick(ClickEvent event) {
+				aboutBox = new AboutBox(circuitjs1.versionString);
+			    }
+			  });
+		 aboutButton.setStylePrimaryName("topButton");
 		 
 		 /*
 	dumpMatrixButton = new Button("Dump Matrix");
@@ -609,17 +636,19 @@ MouseOutHandler, MouseWheelHandler {
 	
 	elmMenuBar = new MenuBar(true);
 	elmMenuBar.addItem(elmEditMenuItem = new MenuItem(LS("Edit..."),new MyCommand("elm","edit")));
-	elmMenuBar.addItem(elmScopeMenuItem = new MenuItem(LS("View in Scope"), new MyCommand("elm","viewInScope")));
-	elmMenuBar.addItem(elmFloatScopeMenuItem  = new MenuItem(LS("View in Undocked Scope"), new MyCommand("elm","viewInFloatScope")));
-	elmMenuBar.addItem(elmCutMenuItem = new MenuItem(LS("Cut"),new MyCommand("elm","cut")));
-	elmMenuBar.addItem(elmCopyMenuItem = new MenuItem(LS("Copy"),new MyCommand("elm","copy")));
-	elmMenuBar.addItem(elmDeleteMenuItem = new MenuItem(LS("Delete"),new MyCommand("elm","delete")));
-	elmMenuBar.addItem(                    new MenuItem(LS("Duplicate"),new MyCommand("elm","duplicate")));
-	elmMenuBar.addItem(elmFlipMenuItem = new MenuItem(LS("Swap Terminals"),new MyCommand("elm","flip")));
-	elmMenuBar.addItem(elmSplitMenuItem = menuItemWithShortcut(LS("Split Wire"), LS(ctrlMetaKey + "-click"), new MyCommand("elm","split")));
-	elmMenuBar.addItem(elmSliderMenuItem = new MenuItem(LS("Sliders..."),new MyCommand("elm","sliders")));
+	if (globalSimMode==MODE_NORMAL) {
+        	elmMenuBar.addItem(elmScopeMenuItem = new MenuItem(LS("View in Scope"), new MyCommand("elm","viewInScope")));
+        	elmMenuBar.addItem(elmFloatScopeMenuItem  = new MenuItem(LS("View in Undocked Scope"), new MyCommand("elm","viewInFloatScope")));
+        	elmMenuBar.addItem(elmCutMenuItem = new MenuItem(LS("Cut"),new MyCommand("elm","cut")));
+        	elmMenuBar.addItem(elmCopyMenuItem = new MenuItem(LS("Copy"),new MyCommand("elm","copy")));
+        	elmMenuBar.addItem(elmDeleteMenuItem = new MenuItem(LS("Delete"),new MyCommand("elm","delete")));
+        	elmMenuBar.addItem(                    new MenuItem(LS("Duplicate"),new MyCommand("elm","duplicate")));
+        	elmMenuBar.addItem(elmFlipMenuItem = new MenuItem(LS("Swap Terminals"),new MyCommand("elm","flip")));
+        	elmMenuBar.addItem(elmSplitMenuItem = menuItemWithShortcut(LS("Split Wire"), LS(ctrlMetaKey + "-click"), new MyCommand("elm","split")));
+	}
+        elmMenuBar.addItem(elmSliderMenuItem = new MenuItem(LS("Sliders..."),new MyCommand("elm","sliders")));
 	
-	scopePopupMenu = new ScopePopupMenu();
+	scopePopupMenu = new ScopePopupMenu(globalSimMode);
 
 	CircuitElm.setColorScale();
 	
@@ -645,26 +674,29 @@ MouseOutHandler, MouseWheelHandler {
 
 		
 
-	
+	if (globalSimMode==MODE_NORMAL) {
 		enableUndoRedo();
 		enablePaste();
-		setiFrameHeight();
-		cv.addMouseDownHandler(this);
-		cv.addMouseMoveHandler(this);
-		cv.addMouseOutHandler(this);
-		cv.addMouseUpHandler(this);
-		cv.addClickHandler(this);
-		cv.addDoubleClickHandler(this);
-		doTouchHandlers(cv.getCanvasElement());
-		cv.addDomHandler(this, ContextMenuEvent.getType());	
-		menuBar.addDomHandler(new ClickHandler() {
-		    public void onClick(ClickEvent event) {
-		        doMainMenuChecks();
-		      }
-		    }, ClickEvent.getType());	
-		Event.addNativePreviewHandler(this);
-		cv.addMouseWheelHandler(this);
-		setSimRunning(true);
+	}
+	setiFrameHeight();
+	cv.addMouseDownHandler(this);
+	if (globalSimMode==MODE_NORMAL) {
+	    cv.addMouseMoveHandler(this);
+	    cv.addMouseOutHandler(this);
+	    cv.addMouseUpHandler(this);
+	}
+	cv.addClickHandler(this);
+	cv.addDoubleClickHandler(this);
+	doTouchHandlers(cv.getCanvasElement());
+	cv.addDomHandler(this, ContextMenuEvent.getType());	
+	menuBar.addDomHandler(new ClickHandler() {
+	    public void onClick(ClickEvent event) {
+		doMainMenuChecks();
+	    }
+	}, ClickEvent.getType());	
+	Event.addNativePreviewHandler(this);
+	cv.addMouseWheelHandler(this);
+	setSimRunning(false);
     }
 
     MenuItem menuItemWithShortcut(String text, String shortcut, MyCommand cmd) {
@@ -812,6 +844,11 @@ MouseOutHandler, MouseWheelHandler {
     boolean shown = false;
     
     public void composeMainMenu(MenuBar mainMenuBar) {
+	
+	if (globalSimMode!=MODE_NORMAL) {
+	    return;
+	}
+	
     	mainMenuBar.addItem(getClassCheckItem(LS("Add Wire"), "WireElm"));
     	mainMenuBar.addItem(getClassCheckItem(LS("Add Resistor"), "ResistorElm"));
 
@@ -1075,12 +1112,12 @@ MouseOutHandler, MouseWheelHandler {
     public void setSimRunning(boolean s) {
     	if (s) {
     		simRunning = true;
-    		runStopButton.setHTML(LSHTML("<strong>RUN</strong>&nbsp;/&nbsp;Stop"));
+    		runStopButton.setHTML(LSHTML("<strong>STOP</strong>"));
     		runStopButton.setStylePrimaryName("topButton");
     		timer.scheduleRepeating(FASTTIMER);
     	} else {
     		simRunning = false;
-    		runStopButton.setHTML(LSHTML("Run&nbsp;/&nbsp;<strong>STOP</strong>"));
+    		runStopButton.setHTML(LSHTML("RUN&nbsp;"));
     		runStopButton.setStylePrimaryName("topButton-red");
     		timer.cancel();
 		repaint();
@@ -2581,6 +2618,10 @@ MouseOutHandler, MouseWheelHandler {
     
     
     public void menuPerformed(String menu, String item) {
+	
+	if (globalSimMode!=MODE_NORMAL) {
+	    return;
+	}
     	if (item=="about")
     		aboutBox = new AboutBox(circuitjs1.versionString);
     	if (item=="importfromlocalfile") {
@@ -3897,7 +3938,7 @@ MouseOutHandler, MouseWheelHandler {
 	} else
 	    tempMouseMode = MODE_DRAG_ALL;
 	
-	if ((scopeSelected != -1 && scopes[scopeSelected].cursorInSettingsWheel()) ||
+if ((scopeSelected != -1 && scopes[scopeSelected].cursorInSettingsWheel()) ||
 		( scopeSelected == -1 && mouseElm instanceof ScopeElm && ((ScopeElm)mouseElm).elmScope.cursorInSettingsWheel())){
 	    console("Doing something");
 	    Scope s;
@@ -4201,6 +4242,12 @@ MouseOutHandler, MouseWheelHandler {
     
     void doDelete(boolean pushUndoFlag) {
     	int i;
+    	
+    	if (globalSimMode!=MODE_NORMAL) {
+	    return;
+	}
+	  	
+    	
     	if (pushUndoFlag)
     	    pushUndo();
     	boolean hasDeleted = false;
@@ -4402,7 +4449,8 @@ MouseOutHandler, MouseWheelHandler {
     }
     
     public void onPreviewNativeEvent(NativePreviewEvent e) {
-    	int cc=e.getNativeEvent().getCharCode();
+    	
+	int cc=e.getNativeEvent().getCharCode();
     	int t=e.getTypeInt();
     	int code=e.getNativeEvent().getKeyCode();
     	if (dialogIsShowing()) {
@@ -4426,15 +4474,17 @@ MouseOutHandler, MouseWheelHandler {
     	}
     	if ((t & Event.ONKEYDOWN)!=0) {
     		if (code==KEY_BACKSPACE || code==KEY_DELETE) {
-    		    if (scopeSelected != -1) {
-    			// Treat DELETE key with scope selected as "remove scope", not delete
-    			scopes[scopeSelected].setElm(null);
-    			scopeSelected = -1;
-    		    } else {
-    		    	menuElm = null;
-    		    	pushUndo();
-    			doDelete(true);
-    			e.cancel();
+    		    if (globalSimMode==MODE_NORMAL) {
+    			if (scopeSelected != -1) {
+    			    // Treat DELETE key with scope selected as "remove scope", not delete
+    			    scopes[scopeSelected].setElm(null);
+    			    scopeSelected = -1;
+    			} else {
+    			    menuElm = null;
+    			    pushUndo();
+    			    doDelete(true);
+    			    e.cancel();
+    			}
     		    }
     		}
     		if (code==KEY_ESCAPE){

@@ -37,6 +37,7 @@ public class AboutBox extends PopupPanel {
 		setWidget(vp);
 		vp.setWidth("400px");
 		vp.add(new HTML("<p>Circuit Simulator version "+version+".</p>"+
+		"<p>Student Mode by Ersin Gulacti @ Yontem Teknoloji.<br><a href=\"http://yontemteknoloji.com//\" target=\"_blank\">http://yontemteknoloji.com/</a></p>"+
 		"<p>Original by Paul Falstad.<br><a href=\"http://www.falstad.com/\" target=\"_blank\">http://www.falstad.com/</a></p>"+
 		"<p>JavaScript conversion by Iain Sharp.<br><a href=\"http://lushprojects.com/\" target=\"_blank\">http://lushprojects.com/</a></p>"+
 		"<p>Thanks to: Edward Calver for 15 new components and other improvements; Rodrigo Hausen for file import/export and many other UI improvements; "+  
@@ -56,6 +57,7 @@ public class AboutBox extends PopupPanel {
 		"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "+
 		"GNU General Public License for more details.</p>"+
 		"<p style=\"font-size:9px\">For details of licensing see <A href=\"http://www.gnu.org/licenses/\" target=\"_blank\">http://www.gnu.org/licenses/</A>.</p>"+
+		"<p style=\"font-size:9px\">Source code (Ersin):<A href=\"https://github.com/egulacti/circuitjs1\" target=\"_blank\">https://github.com/egulacti/circuitjs1</A></p>"+    
 		"<p style=\"font-size:9px\">Source code (Paul):<A href=\"https://github.com/pfalstad/circuitjs1\" target=\"_blank\">https://github.com/pfalstad/circuitjs1</A></p>"+
 	    "<p style=\"font-size:9px\">Source code (Iain):<A href=\"https://github.com/sharpie7/circuitjs1\" target=\"_blank\">https://github.com/sharpie7/circuitjs1</A></p>"));
 		

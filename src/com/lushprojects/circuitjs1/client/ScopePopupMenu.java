@@ -36,7 +36,11 @@ public class ScopePopupMenu {
     private MenuItem dockItem;
     private MenuItem undockItem;
     
-    ScopePopupMenu() {
+    ScopePopupMenu(int globalSimMode) {
+	if (globalSimMode!=0) { //MODE_NORMAL=0
+	    return;
+	}
+	
 	 m = new MenuBar(true);
 	 m.addItem(removeScopeItem = new CheckboxAlignedMenuItem(CirSim.LS("Remove Scope"),new MyCommand("scopepop", "remove")));
 	 m.addItem(dockItem = new CheckboxAlignedMenuItem(CirSim.LS("Dock Scope"),new MyCommand("scopepop", "dock")));
