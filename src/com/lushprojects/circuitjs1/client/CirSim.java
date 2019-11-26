@@ -253,7 +253,7 @@ MouseOutHandler, MouseWheelHandler {
     Context2d cvcontext;
     Canvas backcv;
     Context2d backcontext;
-    static final int MENUBARHEIGHT=30;
+    static int MENUBARHEIGHT=30;
     static int VERTICALPANELWIDTH=166; // default
     static final int POSTGRABSQ=25;
     static final int MINPOSTGRABSIZE = 256;
@@ -277,7 +277,9 @@ MouseOutHandler, MouseWheelHandler {
     	width=(int)RootLayoutPanel.get().getOffsetWidth();
     	height=(int)RootLayoutPanel.get().getOffsetHeight();
     	height=height-MENUBARHEIGHT;
-    	width=width-VERTICALPANELWIDTH;
+    	if (globalSimMode==MODE_NORMAL) {
+    	    width=width-VERTICALPANELWIDTH;
+    	}
 		if (cv != null) {
 			cv.setWidth(width + "PX");
 			cv.setHeight(height + "PX");
@@ -410,8 +412,12 @@ MouseOutHandler, MouseWheelHandler {
 	  verticalPanel=new VerticalPanel();
 	  
 	  // make buttons side by side if there's room
-	  buttonPanel=(VERTICALPANELWIDTH == 166) ? new HorizontalPanel() : new VerticalPanel();
-	  
+	  if (globalSimMode==MODE_NORMAL) {
+	      buttonPanel=(VERTICALPANELWIDTH == 166) ? new HorizontalPanel() : new VerticalPanel();
+	  } else {
+	      VERTICALPANELWIDTH = width-10;
+	      buttonPanel=new HorizontalPanel();
+	  }
 	m = new MenuBar(true);
 	m.addItem(undoItem = menuItemWithShortcut(LS("Undo"), LS("Ctrl-Z"), new MyCommand("edit","undo")));
 	m.addItem(redoItem = menuItemWithShortcut(LS("Redo"), LS("Ctrl-Y"), new MyCommand("edit","redo")));
@@ -535,38 +541,48 @@ MouseOutHandler, MouseWheelHandler {
 
 	if (globalSimMode==MODE_NORMAL) {  
 	  layoutPanel.addNorth(menuBar, MENUBARHEIGHT);
-	}
 	  layoutPanel.addEast(verticalPanel, VERTICALPANELWIDTH);
 	  RootLayoutPanel.get().add(layoutPanel);
+	} else {
+	    MENUBARHEIGHT=37;
+	    layoutPanel.addNorth(verticalPanel, MENUBARHEIGHT);
+	    RootLayoutPanel.get().add(layoutPanel);
+	}
 	
 	cv =Canvas.createIfSupported();
 	  if (cv==null) {
 		  RootPanel.get().add(new Label("Not working. You need a browser that supports the CANVAS element."));
 		  return;
 	  }
-	  
-	  
-	  
-	    cvcontext=cv.getContext2d();
-	 backcv=Canvas.createIfSupported();
-	    backcontext=backcv.getContext2d();
-	    setCanvasSize();
-		layoutPanel.add(cv);
-		verticalPanel.add(buttonPanel);
-		 buttonPanel.add(resetButton = new Button(LS("Reset")));
-		 resetButton.addClickHandler(new ClickHandler() {
-			    public void onClick(ClickEvent event) {
-			      resetAction();
-			    }
-			  });
+	    
+	Label l;  
+	cvcontext=cv.getContext2d();
+	backcv=Canvas.createIfSupported();
+	backcontext=backcv.getContext2d();
+	setCanvasSize();
+	layoutPanel.add(cv);
+	verticalPanel.add(buttonPanel);
+	
+	buttonPanel.add(resetButton = new Button(LS("Reset")));
+	resetButton.addClickHandler(new ClickHandler() {
+	    public void onClick(ClickEvent event) {
+		resetAction();
+	    }
+	});
 		 		 
 		 resetButton.setStylePrimaryName("topButton");
-		 		 buttonPanel.add(runStopButton = new Button(LSHTML("<Strong>RUN</Strong>&nbsp;/&nbsp;Stop")));
+		 buttonPanel.add(runStopButton = new Button(LSHTML("<Strong>RUN</Strong>&nbsp;/&nbsp;Stop")));
 		 runStopButton.addClickHandler(new ClickHandler() {
 			    public void onClick(ClickEvent event) {
 			      setSimRunning(!simIsRunning());
 			    }
 			  });
+		 
+		 if (globalSimMode!=MODE_NORMAL)  {
+		     Label lSpacer = new Label();
+		     lSpacer.getElement().setInnerSafeHtml(LSHTML("&nbsp;&nbsp;&nbsp;"));
+    	     	     buttonPanel.add( lSpacer );
+		 }
 		 
 		 buttonPanel.add(aboutButton = new Button(LS("?")));
 		 aboutButton.addClickHandler(new ClickHandler() {
@@ -576,17 +592,18 @@ MouseOutHandler, MouseWheelHandler {
 			  });
 		 aboutButton.setStylePrimaryName("topButton");
 		 
+	if (globalSimMode!=MODE_NORMAL) {
+	    verticalPanel.setCellHorizontalAlignment(buttonPanel, HasHorizontalAlignment.ALIGN_RIGHT);
+	}
 		 /*
 	dumpMatrixButton = new Button("Dump Matrix");
 	dumpMatrixButton.addClickHandler(new ClickHandler() {
 	    public void onClick(ClickEvent event) { dumpMatrix = true; }});
-	verticalPanel.add(dumpMatrixButton);// IES for debugging
-*/
-	
+	verticalPanel.add(dumpMatrixButton);// IES for debugging 		  */
+
 	if (LoadFile.isSupported())
-		verticalPanel.add(loadFileInput = new LoadFile(this));
-	
-	Label l;
+	     verticalPanel.add(loadFileInput = new LoadFile(this));
+
 	verticalPanel.add(l = new Label(LS("Simulation Speed")));
 	l.addStyleName("topSpace");
 
@@ -599,25 +616,25 @@ MouseOutHandler, MouseWheelHandler {
 	verticalPanel.add(currentBar);
 	verticalPanel.add(powerLabel = new Label (LS("Power Brightness")));
 	powerLabel.addStyleName("topSpace");
-	verticalPanel.add(powerBar = new Scrollbar(Scrollbar.HORIZONTAL,
-		    50, 1, 1, 100));
+	verticalPanel.add(powerBar = new Scrollbar(Scrollbar.HORIZONTAL, 50, 1, 1, 100));
 	setPowerBarEnable();
-	
-//	verticalPanel.add(new Label(""));
-//        Font f = new Font("SansSerif", 0, 10);
-        l = new Label(LS("Current Circuit:"));
+
+	//	verticalPanel.add(new Label(""));
+	//        Font f = new Font("SansSerif", 0, 10);
+	l = new Label(LS("Current Circuit:"));
 	l.addStyleName("topSpace");
-//        l.setFont(f);
-        titleLabel = new Label("Label");
-//        titleLabel.setFont(f);
-        verticalPanel.add(l);
-        verticalPanel.add(titleLabel);
+	//        l.setFont(f);
+	titleLabel = new Label("Label");
+	//        titleLabel.setFont(f);
+	verticalPanel.add(l);
+	verticalPanel.add(titleLabel);
 
 	verticalPanel.add(iFrame = new Frame("iframe.html"));
 	iFrame.setWidth(VERTICALPANELWIDTH+"px");
 	iFrame.setHeight("100 px");
 	iFrame.getElement().setAttribute("scrolling", "no");
-	
+
+
 	setGrid();
 	elmList = new Vector<CircuitElm>();
 	adjustables = new Vector<Adjustable>();
