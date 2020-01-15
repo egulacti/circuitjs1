@@ -327,6 +327,7 @@ MouseOutHandler, MouseWheelHandler {
 	boolean convention = true;
 	boolean euroRes = false;
 	boolean usRes = false;
+	
 	MenuBar m;
 
 	CircuitElm.initClass(this);
@@ -349,6 +350,14 @@ MouseOutHandler, MouseWheelHandler {
 		printable = qp.getBooleanValue("whiteBackground", getOptionFromStorage("whiteBackground", false));
 		convention = qp.getBooleanValue("conventionalCurrent",
 			getOptionFromStorage("conventionalCurrent", true));
+		startCircuit = qp.getValue("startCircuit");
+		if (qp.getBooleanValue("studentMode",  true)) {
+		    globalSimMode=MODE_STUDENT;
+		} else 
+		{
+		    globalSimMode=MODE_NORMAL;
+		}
+			
 	} catch (Exception e) { }
 	
 	boolean euroSetting = false;
