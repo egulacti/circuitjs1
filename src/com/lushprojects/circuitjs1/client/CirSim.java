@@ -352,7 +352,7 @@ MouseOutHandler, MouseWheelHandler {
 			getOptionFromStorage("conventionalCurrent", true));
 		startCircuit = qp.getValue("startCircuit");
 		if (qp.getBooleanValue("studentMode",  true)) {
-		    globalSimMode=MODE_STUDENT;
+		    globalSimMode=MODE_NORMAL;
 		} else 
 		{
 		    globalSimMode=MODE_NORMAL;
@@ -886,6 +886,7 @@ MouseOutHandler, MouseWheelHandler {
     	passMenuBar.addItem(getClassCheckItem(LS("Add Push Switch"), "PushSwitchElm"));
     	passMenuBar.addItem(getClassCheckItem(LS("Add SPDT Switch"), "Switch2Elm"));
     	passMenuBar.addItem(getClassCheckItem(LS("Add Potentiometer"), "PotElm"));
+    	passMenuBar.addItem(getClassCheckItem(LS("Add LDR/PTC/NTC"), "LDRElm"));
     	passMenuBar.addItem(getClassCheckItem(LS("Add Transformer"), "TransformerElm"));
     	passMenuBar.addItem(getClassCheckItem(LS("Add Tapped Transformer"), "TappedTransformerElm"));
     	passMenuBar.addItem(getClassCheckItem(LS("Add Transmission Line"), "TransLineElm"));
@@ -3871,7 +3872,7 @@ MouseOutHandler, MouseWheelHandler {
 	int i;
 	
 	// prevent confusion
-	if (elm instanceof VarRailElm || elm instanceof PotElm)
+	if (elm instanceof VarRailElm || elm instanceof PotElm || elm instanceof LDRElm)
 	    return false;
 	
 	for (i = 0; ; i++) {
@@ -4754,6 +4755,8 @@ if ((scopeSelected != -1 && scopes[scopeSelected].cursorInSettingsWheel()) ||
     		return (CircuitElm) new VarRailElm(x1, y1, x2, y2, f, st);
     	if (tint==174)
     		return (CircuitElm) new PotElm(x1, y1, x2, y2, f, st);
+    	if (tint==500)
+		return (CircuitElm) new LDRElm(x1, y1, x2, y2, f, st);
     	if (tint=='O')
     		return (CircuitElm) new OutputElm(x1, y1, x2, y2, f, st);
     	if (tint=='i')
@@ -4960,6 +4963,8 @@ if ((scopeSelected != -1 && scopes[scopeSelected].cursorInSettingsWheel()) ||
     		return (CircuitElm) new VarRailElm(x1, y1);
     	if (n=="PotElm")
     		return (CircuitElm) new PotElm(x1, y1);
+    	if (n=="LDRElm")
+		return (CircuitElm) new LDRElm(x1, y1);
     	if (n=="OutputElm")
     		return (CircuitElm) new OutputElm(x1, y1);
     	if (n=="CurrentElm")
